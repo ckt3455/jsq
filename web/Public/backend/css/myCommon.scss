@@ -1,0 +1,126 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike,
+strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody,footer,header,section,
+tfoot, thead, tr, th, td ,textarea,input { margin:0; padding:0;box-sizing: border-box;}
+address,cite,dfn,em,var, i {font-style:normal;}
+body {font-size: 16px; line-height: 1.5; font-family:'Microsoft Yahei','arial','tahoma';  color: #222; background: #fff; }
+table { border-collapse:collapse; border-spacing:0; }
+h1, h2, h3, h4, h5, h6, th { font-size: 100%; font-weight: normal; }
+button,input,select,textarea{font-size:100%;}
+fieldset,img{border:0;display: block;}
+a { text-decoration: none; color: #666; background: none; }
+ul, ol { list-style: none; }
+:focus{ outline:none;}
+.clearfix{ clear: both; content: ""; display: block; overflow: hidden; }
+.fl{ float: left; }
+.fr{float: right;}
+.db{display: block;}
+.dn{display: none;}
+textarea,input,select{font-family:'Microsoft Yahei' !important;}
+
+/*-------------公共小样式---------------*/
+/*多行文本隐藏*/
+@mixin mul_ellipsis($num){
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp:$num;
+  overflow: hidden;
+}
+/*字体设置*/
+@mixin font_col($size,$color){
+  font-size: $size;color:$color;
+}
+
+/*渐变色背景*/
+
+@mixin bgliner_gra($dir,$start,$end){
+  background: -moz-linear-gradient( $dir,$start,$end);
+  background: -webkit-linear-gradient($dir,$start,$end);
+  background: -o-linear-gradient($dir,$start,$end);
+}
+
+/*提示文字*/
+input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */@include font_col(14px,#aaa);}
+input::-moz-placeholder { /* Mozilla Firefox 19+ */@include font_col(14px,#aaa);}
+input:-ms-input-placeholder{@include font_col(14px,#aaa);}
+input::-webkit-input-placeholder{@include font_col(14px,#aaa);}
+
+textarea:-moz-placeholder { /* Mozilla Firefox 4 to 18 */@include font_col(14px,#aaa);}
+textarea::-moz-placeholder { /* Mozilla Firefox 19+ */@include font_col(14px,#aaa);}
+textarea:-ms-input-placeholder{@include font_col(14px,#aaa);}
+textarea::-webkit-input-placeholder{@include font_col(14px,#aaa);}
+
+/*-------------------共享---------------------*/
+.cen{width: 1200px;margin: 0 auto;position: relative;}
+/*居中*/
+.position_z{position: absolute;top: 50%;left:50%;-webkit-transform: translate3d(-50%, -50%, 0);transform: translate3d(-50%, -50%, 0);}
+
+
+/*首页*/
+.xjw_top{margin-top: 70px;
+  .xjw_left{width: 48%;height: 500px;border: 1px solid #eee;position: relative;float: left;
+    img{max-width: 95%;max-height: 95%;}
+  }
+  .xjw_right{width: 48%;float: right;
+    h1{@include font_col(24px,#333);text-align: center;line-height: 40px;}
+    .xjw_nav{padding: 30px 0;border-bottom: 1px solid #eee;border-top: 1px solid #eee;}
+    h2{@include font_col(18px,#333);line-height: 40px;}
+  }
+}
+.xjw_bottom{margin-top: 50px;
+  .xjw_left2{width: 50%;position: relative;float: left;}
+  .xjw_right2{width: 50%;float: right;}
+  .nav{width: 125px;margin: auto;cursor: pointer;}
+  h1{@include font_col(18px,#333);text-align: center;line-height: 50px;}
+}
+
+/*列表*/
+.xjw_title{text-align: center;@include font_col(36px,#333);padding: 50px 0 20px;border-bottom: 1px solid #ccc;}
+.xjw_listNav{margin-top: 50px;
+  .xjw_inLeft{float: left;width: 48%;
+    .xjw_inLeft_tab{border-bottom: 1px solid #ccc;
+      .xjw_tab{float: left;width: 70px;text-align: center;height: 60px;padding: 5px 0;cursor: pointer;}
+      .xjw_tab.show{background: #2882f9;color: #fff;}
+    }
+    .xjw_inLeft_info{
+      .xjw_info_list{padding: 20px 0;display: none;
+        .xjwnh_left,.xjwnh_right{float: left;width: 50%;border-right: 1px solid #ccc;padding: 0 10px;
+          h2{text-align: center;@include font_col(18px,#333);padding-bottom: 10px;}
+          .xjwnh_left_au{height: 500px;overflow-y: auto;}
+          /*定义滚动条横纵轴宽高*/
+          .xjwnh_left_au::-webkit-scrollbar {width: 8px;}
+          /*定义滚动条轨道 内阴影+圆角*/
+          .xjwnh_left_au::-webkit-scrollbar-track {background: #8eb9e4;border-radius: 50px;}
+          /*定义滑块 内阴影+圆角*/
+          .xjwnh_left_au::-webkit-scrollbar-thumb {border-radius: 50px;background: #2883f9;}
+          ul{
+            li{width: 215px;background: #8eb9e4;margin: 10px auto;padding: 5px 0;border-radius: 20px;text-align: center;cursor: pointer;@include font_col(18px,#fff);
+              a{@include font_col(18px,#fff);display: block;width: 100%;height: 100%;}
+            }
+            li:hover{background: #2883f9;}
+            li.show{background: #2883f9;}
+            li.notAllow{background: #ccc;}
+          }
+        }
+        .xjwnh_right{border-left: 1px solid #ccc;border-right: 0;margin-left: -1px;}
+      }
+      .xjw_info_list.show{display: block;}
+    }
+  }
+  .xjw_inRight{width: 48%;float: right;
+    .xjw_inRight_top{width: 100%;
+      h2{width: 25%;border-bottom: 1px solid #ccc;line-height: 60px;text-align: center;float: left;}
+    }
+    .xjw_inRight_bottom{margin-top: 20px;height: 540px;overflow-y: auto;
+      li{
+        h2{width: 25%;line-height: 60px;text-align: center;float: left;}
+      }
+      li:nth-of-type(2n+1){background: #eee;}
+    }
+    .xjw_inRight_bottom::-webkit-scrollbar {width: 8px;}
+    /*定义滚动条轨道 内阴影+圆角*/
+    .xjw_inRight_bottom::-webkit-scrollbar-track {background: #8eb9e4;border-radius: 50px;}
+    /*定义滑块 内阴影+圆角*/
+    .xjw_inRight_bottom::-webkit-scrollbar-thumb {border-radius: 50px;background: #2883f9;}
+  }
+
+}

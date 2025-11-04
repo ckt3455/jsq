@@ -1,5 +1,7 @@
 .idea
 /backend/runtime/*
-/backend/web/assets/*
 /frontend/runtime/*
-/frontend/web/assets/*
+/api/runtime/*
+/web/backend/assets/*
+/web/api/assets/*
+/web/assets/*

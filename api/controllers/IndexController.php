@@ -5,6 +5,8 @@ namespace api\controllers;
 use api\extensions\ApiBaseController;
 use backend\models\Code;
 use backend\models\SetImage;
+use common\components\CommonFunction;
+use common\components\File;
 use common\components\Helper;
 use common\exception\ApiException;
 use Yii;
@@ -32,6 +34,7 @@ class IndexController extends ApiBaseController
         return $this->jsonSuccess($data);
     }
 
+    //发送验证码
     public function actionCode()
     {
 
@@ -109,5 +112,23 @@ class IndexController extends ApiBaseController
      * **/
     public function actionError() {
         return $this->jsonError();
+    }
+
+
+    //上传图片
+
+    public function actionUpImage()
+    {
+        if(!isset($_FILES['file'])){
+            return $this->jsonError('请上传数据');
+        }
+        $image = File::UpOneFile($_FILES['file'],array('jpg', 'jpeg', 'gif', 'bmp', 'png'));
+        if($image['error']!=0){
+            return $this->jsonError($image['msg']);
+        }
+        $data=[
+            'url'=>$this->setImg($image['url'])
+        ];
+        return $this->jsonSuccess($data);
     }
 }

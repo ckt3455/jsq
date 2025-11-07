@@ -80,21 +80,11 @@ class User extends \yii\db\ActiveRecord
         if ($this->isAttributeChanged('password')) {
 
 
-            $this->password = md5(md5($this->password) . 'ysdf');
+            $this->password = md5($this->password.md5(Yii::$app->params['password_code']));
 
 
         }
 
-        if ($this->isAttributeChanged('money')) {
-
-            $this->money = $this->getOldAttribute('money');
-
-        }
-        if ($this->isAttributeChanged('code')) {
-
-            $this->user_code = "";
-
-        }
 
         return parent::beforeSave($insert);
 

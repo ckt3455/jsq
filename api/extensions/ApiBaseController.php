@@ -2,6 +2,7 @@
 
 namespace api\extensions;
 use app\components\ParamValidator;
+use backend\models\User;
 use yii\filters\ContentNegotiator;
 use yii\rest\Controller;
 use yii\base\DynamicModel;
@@ -96,6 +97,82 @@ class ApiBaseController extends Controller {
      */
     protected function jsonSuccess($data = [], $message = '请求成功') {
         return ['code' => 0, 'message' => $message, 'data' => $data];
+    }
+
+
+
+
+    /**
+     * 获取常用字段的验证规则
+     * @param array $fields 需要验证的字段列表
+     * @param array $customRules 自定义规则
+     * @return array
+     */
+    public static function getRules($fields = [], $customRules = [])
+    {
+        $commonRules = [];
+
+        // 定义常用字段的基础规则
+        $baseRules = [
+            'user_id' => [
+                ['user_id'], 'required', 'message' => '用户ID不能为空',
+            ],
+            'username' => [
+                ['username'], 'required', 'message' => '用户名不能为空'
+            ],
+            'password' => [
+                ['password'], 'required', 'message' => '密码不能为空'
+            ],
+            're_password' => [
+                ['re_password'], 'required', 'message' => '确认密码不能为空'
+            ],
+            'email' => [
+                ['email'], 'required', 'message' => '邮箱不能为空'
+            ],
+            'mobile' => [
+                ['mobile'], 'required', 'message' => '手机号不能为空'
+            ],
+            'sms' => [
+                ['sms'], 'required', 'message' => '短信验证码不能为空'
+            ],
+        ];
+
+        // 定义常用字段的扩展验证规则
+        $extendedRules = [
+            'user_id' => [
+                [
+                    ['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id', 'message' => '用户ID不存在'],
+                    [['user_id'], 'integer', 'min' => 1, 'message' => '用户ID必须为正整数'],
+                ],
+
+            're_password' => [
+                [['password'], 'compare','compareAttribute' => 're_password', 'message' => '两次输入的密码不一致！']
+            ],
+            'email' => [
+                [['email'], 'email', 'message' => '邮箱格式不正确']
+            ],
+            'mobile' => [
+                [['mobile'], 'match', 'pattern' => '/^1[3-9]\d{9}$/', 'message' => '手机号格式不正确']
+            ],
+
+        ];
+
+
+        // 根据传入的字段构建规则
+        foreach ($fields as $field) {
+            if (isset($baseRules[$field])) {
+                $commonRules[] = $baseRules[$field];
+            }
+            if (isset($extendedRules[$field])) {
+                foreach ($extendedRules[$field] as $rule) {
+                    $commonRules[] = $rule;
+                }
+            }
+        }
+
+
+        // 合并自定义规则
+        return array_merge($commonRules, $customRules);
     }
 
     /**

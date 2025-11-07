@@ -1,6 +1,7 @@
 <?php
 
 namespace api\extensions;
+use app\components\ParamValidator;
 use yii\filters\ContentNegotiator;
 use yii\rest\Controller;
 use yii\base\DynamicModel;
@@ -43,6 +44,17 @@ class ApiBaseController extends Controller {
             ],
         ];
     }
+
+
+    //拼接域名
+    protected function setImg($img,$hostInfo=null){
+        if(stripos($img,'http') !== 0 && !empty($img)) {
+            $hostInfo = empty($hostInfo)?Yii::$app->request->hostInfo:$hostInfo;
+            $img = $hostInfo . $img;
+        }
+        return $img;
+    }
+
 
 
     private function validateSign()
@@ -92,6 +104,8 @@ class ApiBaseController extends Controller {
      * @param  array $rules 规则
      * **/
    protected function validateParams($params, $rules) {
+
+
 
        foreach ($rules as $k=>$v){
 

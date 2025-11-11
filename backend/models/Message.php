@@ -3,13 +3,14 @@
 namespace backend\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%message}}".
  *
  * @property integer $id
- * @property string $name
- * @property string $email
+ * @property string $type
  * @property string $content
  */
 class Message extends \yii\db\ActiveRecord
@@ -28,8 +29,8 @@ class Message extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'email'], 'string', 'max' => 100],
-            [['content'], 'string', 'max' => 1000],
+            [['content'], 'string'],
+            [['type'], 'string', 'max' => 50],
         ];
     }
 
@@ -40,13 +41,24 @@ class Message extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => '姓名',
-            'email' => '邮箱',
-            'content' => '内容',
-            'mobile' => '手机号',
-            'whatsapp' => 'whatsapp',
-            'company' => '公司',
-            'created_at'=>'添加时间'
+            'type' => 'Type',
+            'content' => 'Content',
+        ];
+    }
+
+    /**
+    * @return array
+    */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['append', 'updated'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated'],
+                ],
+            ],
         ];
     }
 }

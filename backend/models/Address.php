@@ -9,7 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property integer $user_id
- * @property string $provinces
+ * @property string $province
  * @property string $city
  * @property string $area
  * @property string $content
@@ -34,10 +34,10 @@ class Address extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'provinces', 'city', 'area', 'user', 'phone'], 'required'],
+            [['user_id', 'province', 'city', 'area', 'user', 'phone'], 'required'],
             [['user_id', 'is_default', 'is_default2'], 'integer'],
-            [['content'], 'string'],
-            [['provinces', 'city', 'area', 'user'], 'string', 'max' => 50],
+            [['content','sign'], 'string'],
+            [['province', 'city', 'area', 'user'], 'string', 'max' => 50],
             [['phone'], 'string', 'max' => 20],
         ];
     }
@@ -50,7 +50,7 @@ class Address extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => '用户id',
-            'provinces' => '省',
+            'province' => '省',
             'city' => '市',
             'area' => '区',
             'content' => '详细地址',

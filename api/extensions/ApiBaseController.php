@@ -135,6 +135,10 @@ class ApiBaseController extends Controller {
             'sms' => [
                 ['sms'], 'required', 'message' => '短信验证码不能为空'
             ],
+
+            'type' => [
+                ['type'], 'required', 'message' => '类型不能为空'
+            ],
         ];
 
         // 定义常用字段的扩展验证规则
@@ -153,6 +157,9 @@ class ApiBaseController extends Controller {
             ],
             'mobile' => [
                 [['mobile'], 'match', 'pattern' => '/^1[3-9]\d{9}$/', 'message' => '手机号格式不正确']
+            ],
+            'phone' => [
+                [['phone'], 'match', 'pattern' => '/^1[3-9]\d{9}$/', 'message' => '手机号格式不正确']
             ],
 
         ];

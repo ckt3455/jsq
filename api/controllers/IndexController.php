@@ -1,14 +1,12 @@
 <?php
 
 namespace api\controllers;
-
 use api\extensions\ApiBaseController;
 use backend\models\Code;
+use backend\models\Message;
 use backend\models\SetImage;
-use common\components\CommonFunction;
 use common\components\File;
 use common\components\Helper;
-use common\exception\ApiException;
 use Yii;
 /**
  * DefaultController controller
@@ -39,9 +37,9 @@ class IndexController extends ApiBaseController
     {
 
         $params = Yii::$app->request->post();
-        $rules = [
-            [['mobile'], 'match', 'pattern' => '/^1[3-9]\d{9}$/','message'=>'手机号格式不正确'],
-        ];
+        // 自定义验证规则
+        $customRules = [];
+        $rules = $this->getRules(['mobile'],$customRules);
         $validate = $this->validateParams($params, $rules);
         if ($validate) {
             return $this->jsonError($validate);
@@ -50,46 +48,28 @@ class IndexController extends ApiBaseController
         $model = Code::find()->where(['phone' => $mobile])->one();
         $number = rand(10000, 99999);
         if (count($model) > 0) {
-
             if ((time() - $model['create_time']) <= 60) {
-
                 return $this->jsonError('短信发送太频繁，请等待1分钟');
-
             } else {
-
                 $model['number'] = $number;
-
                 $model['phone'] = "$mobile";
-
                 $model['expire_time'] = time() + 300;
-
                 $model['create_time'] = time();
 
             }
 
         } else {
-
             $model = new Code();
-
             $model['number'] = $number;
-
             $model['phone'] = "$mobile";
-
             $model['expire_time'] = time() + 300;
-
             $model['create_time'] = time();
-
         }
 
         if ($model->save()) {
-
-
-
             $re = Helper::phpSendMessage($mobile, $number);
-
             if (!$re) {
                 return $this->jsonError('发送失败1');
-
             }
 
         } else {
@@ -104,6 +84,29 @@ class IndexController extends ApiBaseController
         ];
 
         return $this->jsonSuccess($data);
+    }
+
+
+
+    //单页书籍
+    public function actionMessage()
+    {
+        $params = Yii::$app->request->post();
+        // 自定义验证规则
+        $customRules = [];
+        $rules = $this->getRules(['type'],$customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+
+        $model=Message::find()->where(['type'=>$params['type']])->limit(1)->one();
+
+        $data=[
+            'message'=>Helper::imageUrl($model->content,Yii::$app->request->hostInfo)
+        ];
+        return $this->jsonSuccess($data);
+
     }
 
 

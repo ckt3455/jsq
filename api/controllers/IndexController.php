@@ -5,6 +5,7 @@ use api\extensions\ApiBaseController;
 use backend\models\Code;
 use backend\models\Message;
 use backend\models\SetImage;
+use backend\models\UserGoods;
 use common\components\File;
 use common\components\Helper;
 use Yii;
@@ -20,13 +21,60 @@ class IndexController extends ApiBaseController
     public function actionIndex()
     {
 
-        $data = [];
+        $data = [
+            'banner'=>[],
+            'banner2'=>[],
+            'icon'=>[],
+            'goods'=>[],
+        ];
         $banner=SetImage::getList(['type' => 1]);
+        $banner2=SetImage::getList(['type' => 2]);
+        $icon=SetImage::getList(['type' => 3]);
         foreach ($banner as $k=>$v){
             $data['banner'][]=[
                 'image'=>$this->setImg($v['image']),
                 'href'=>$v['href'],
             ];
+        }
+
+        foreach ($banner2 as $k=>$v){
+            $data['banner2'][]=[
+                'image'=>$this->setImg($v['image']),
+                'href'=>$v['href'],
+            ];
+        }
+        foreach ($icon as $k=>$v){
+            $data['icon'][]=[
+                'image'=>$this->setImg($v['image']),
+                'href'=>$v['href'],
+                'title'=>$v['title'],
+                'subtitle'=>$v['subtitle'],
+            ];
+        }
+        $user_id=Yii::$app->request->post('user_id');
+        if($user_id){
+            $goods=UserGoods::find()->where(['user_id'=>$user_id,'is_index'=>1])->orderBy('id desc')->limit(5)->all();
+            foreach ($goods as $k => $v) {
+                $end_days = ceil(($v->end_time - time()) / 86400) + 0;
+                $lx_end_days = ceil(($v->lx_end_time - time()) / 86400) + 0;
+                if ($lx_end_days > 20) {
+                    $lx_status = 1;
+                } elseif ($lx_end_days > 0) {
+                    $lx_status = 2;
+                } else {
+                    $lx_status = 3;
+                }
+                $data['goods'][] = [
+                    'goods_id' => $v->id,
+                    'goods_name' => $v->goods_name,
+                    'goods_code' => $v->goods_code,
+                    'end_days' => $end_days,
+                    'lx_end_days' => $lx_end_days,
+                    'lx_alert' => $v->lx_alert,
+                    'goods_image' => $this->setImg($v->goods_image),
+                    'lx_status' => $lx_status,
+                ];
+            }
         }
 
         return $this->jsonSuccess($data);
@@ -67,7 +115,7 @@ class IndexController extends ApiBaseController
         }
 
         if ($model->save()) {
-            $re = Helper::phpSendMessage($mobile, $number);
+            $re = Helper::sendSms2($mobile, $number);
             if (!$re) {
                 return $this->jsonError('发送失败1');
             }
@@ -88,7 +136,7 @@ class IndexController extends ApiBaseController
 
 
 
-    //单页书籍
+    //单页详情
     public function actionMessage()
     {
         $params = Yii::$app->request->post();

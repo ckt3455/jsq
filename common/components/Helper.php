@@ -1073,11 +1073,11 @@ class Helper
 
         $time=time();
         $data = [
-            "username" => "zajt",
-            "password" =>md5(md5('ATEP559D').$time)  ,
+            "username" => "hzkj",
+            "password" =>md5(md5('5PG2ZEV0').$time)  ,
             "tKey" => $time,
-            "signature" => '【中安君泰北京实业有限公司】',
-            "tpId" => '331750',
+            "signature" => '【灏钻科技】',
+            "tpId" => '478544',
             'records'=>[
                 'mobile'=>$phone,
                 'tpContent'=>[

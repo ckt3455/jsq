@@ -99,6 +99,7 @@ class GoodsController extends ApiBaseController
                 'lx_alert' => $v->lx_alert,
                 'goods_image' => $this->setImg($v->goods_image),
                 'lx_status' => $lx_status,
+
             ];
         }
         return $this->jsonSuccess($data);

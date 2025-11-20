@@ -4,8 +4,11 @@ namespace api\controllers;
 
 use api\extensions\ApiBaseController;
 use backend\models\Address;
+use backend\models\Icon;
+use backend\models\ServiceOrder;
 use backend\models\SetImage;
 use backend\models\User;
+use backend\models\UserMessage;
 use common\components\Helper;
 use Yii;
 /**
@@ -13,6 +16,43 @@ use Yii;
  */
 class UserController extends ApiBaseController
 {
+
+
+
+
+
+    /**
+     * 服务首页
+     * **/
+    public function actionIndex()
+    {
+
+        $data = [
+            'banner'=>[],
+            'icon'=>[],
+        ];
+        $banner=Icon::getList(['type' => 7]);
+        $icon=Icon::getList(['type' => 6]);
+        foreach ($banner as $k=>$v){
+            $data['banner'][]=[
+                'image'=>$this->setImg($v['image']),
+                'href'=>$v['href'],
+                'category'=>$v['category'],
+                'appid'=>$v['appid'],
+            ];
+        }
+        foreach ($icon as $k=>$v){
+            $data['icon'][]=[
+                'image'=>$this->setImg($v['image']),
+                'href'=>$v['href'],
+                'title'=>$v['title'],
+                'category'=>$v['category'],
+                'appid'=>$v['appid'],
+            ];
+        }
+
+        return $this->jsonSuccess($data);
+    }
 
     /**
      * 用户信息
@@ -35,6 +75,9 @@ class UserController extends ApiBaseController
             'name'=>$user['name'],
             'mobile'=>$user['mobile'],
             'image'=>$this->setImg($user['image']),
+            'message_count'=>UserMessage::find()->where(['user_id'=>$user_id,'is_read'=>0])->count(),
+            'service_order1'=>ServiceOrder::find()->where(['user_id'=>$user_id,'status'=>1])->count(),
+            'service_order2'=>ServiceOrder::find()->where(['user_id'=>$user_id,'status'=>2])->count(),
         ];
 
 
@@ -255,6 +298,56 @@ class UserController extends ApiBaseController
         return $this->jsonSuccess($data);
 
     }
+
+    public function actionMessage()
+    {
+        $params = Yii::$app->request->post();
+        $customRules = [];
+        $rules = $this->getRules(['user_id'],$customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $page=Yii::$app->request->get('page',1);
+        $page_number=Yii::$app->request->get('page',10);
+        $query=UserMessage::find()->where(['user_id'=>$params['user_id']]);
+        $sort_value = 'id desc';
+        $sort = Yii::$app->request->post('sort', 1);
+        if ($sort == 2) {
+            $sort_value = 'id asc';
+        }
+        $type = Yii::$app->request->post('type');
+        if($type){
+            $query->andWhere(['type'=>$type]);
+        }
+        $time=Yii::$app->request->post('time');
+        if($time and $time>0){
+            $query->andWhere(['>=','created_at',time()-$time*30*24*3600]);
+        }
+        $begin=($page-1)*$page_number;
+        $model=$query->offset($begin)->limit($page_number)->orderBy($sort_value)->all();
+        $data=[
+            'list'=>[],
+        ];
+        foreach ($model as $k => $v) {
+            $data['list'][] = [
+                'message_id' => $v->id,
+                'title'=>$v->title,
+                'type'=>$v->type,
+                'type_message'=>UserMessage::$type_message[$v->type],
+                'content'=>$v->content,
+                'time'=>date('Y-m-d',$v->created_at),
+                'relation_id'=>$v->relation_id,
+            ];
+        }
+        //更新状态为已读
+        UserMessage::updateAll(['is_read'=>1],['user_id'=>$params['user_id']]);
+        return $this->jsonSuccess($data);
+
+    }
+
+
+
 
 
 }

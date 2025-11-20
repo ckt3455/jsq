@@ -3,6 +3,7 @@
 namespace api\controllers;
 use api\extensions\ApiBaseController;
 use backend\models\Code;
+use backend\models\Icon;
 use backend\models\Message;
 use backend\models\SetImage;
 use backend\models\UserGoods;
@@ -27,13 +28,15 @@ class IndexController extends ApiBaseController
             'icon'=>[],
             'goods'=>[],
         ];
-        $banner=SetImage::getList(['type' => 1]);
-        $banner2=SetImage::getList(['type' => 2]);
-        $icon=SetImage::getList(['type' => 3]);
+        $banner=Icon::getList(['type' => 1]);
+        $banner2=Icon::getList(['type' => 2]);
+        $icon=Icon::getList(['type' => 3]);
         foreach ($banner as $k=>$v){
             $data['banner'][]=[
                 'image'=>$this->setImg($v['image']),
                 'href'=>$v['href'],
+                'category'=>$v['category'],
+                'appid'=>$v['appid'],
             ];
         }
 
@@ -41,6 +44,8 @@ class IndexController extends ApiBaseController
             $data['banner2'][]=[
                 'image'=>$this->setImg($v['image']),
                 'href'=>$v['href'],
+                'category'=>$v['category'],
+                'appid'=>$v['appid'],
             ];
         }
         foreach ($icon as $k=>$v){
@@ -49,6 +54,8 @@ class IndexController extends ApiBaseController
                 'href'=>$v['href'],
                 'title'=>$v['title'],
                 'subtitle'=>$v['subtitle'],
+                'category'=>$v['category'],
+                'appid'=>$v['appid'],
             ];
         }
         $user_id=Yii::$app->request->post('user_id');

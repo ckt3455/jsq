@@ -62,10 +62,9 @@ return [
 
             'showScriptName'  => true,
 
-            'suffix'          => '.html',//静态
+            'suffix'          => false,//静态
 
             'rules' => [
-
 
 
 

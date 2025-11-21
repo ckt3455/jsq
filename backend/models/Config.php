@@ -80,28 +80,11 @@ class Config extends \yii\db\ActiveRecord
     public function info($name=NULL)
     {
         //获取缓存信息
-        $key = Yii::$app->params['cacheName']['config'];
-        $arr = Yii::$app->cache->get($key);
-        if(!$arr)
-        {
-            $config = Config::find()->all();
-            $arr = [];
-            foreach ($config as $row)
-            {
-                $arr[$row['name']] = $row['value'];
-            }
-
-            //设置缓存
-            Yii::$app->cache->set($key,$arr);
-        }
-
-        if($name)
-        {
-            return $arr[$name];
-        }
-        else
-        {
-            return $arr;
+        $config = Config::find()->where(['name'=>$name])->one();
+        if($config){
+            return $config->value;
+        }else{
+            return '';
         }
     }
 

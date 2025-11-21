@@ -120,6 +120,9 @@ class ApiBaseController extends Controller {
             'username' => [
                 ['username'], 'required', 'message' => '用户名不能为空'
             ],
+            'name' => [
+                ['name'], 'required', 'message' => '名称不能为空'
+            ],
             'password' => [
                 ['password'], 'required', 'message' => '密码不能为空'
             ],
@@ -138,6 +141,9 @@ class ApiBaseController extends Controller {
 
             'type' => [
                 ['type'], 'required', 'message' => '类型不能为空'
+            ],
+            'admin_id' => [
+                ['admin_id'], 'required', 'message' => '未登录'
             ],
         ];
 
@@ -209,6 +215,19 @@ class ApiBaseController extends Controller {
 
 
         return '';
+    }
+
+
+    //对比时间和当前时间的剩余天数
+    protected   function end_days($time)
+    {
+        $number=$time-time();
+        if($number<0){
+            return 0;
+        }else{
+            return ceil($number/86400);
+        }
+
     }
 
 }

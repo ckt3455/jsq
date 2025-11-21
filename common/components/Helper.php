@@ -1096,4 +1096,14 @@ class Helper
         return $output;
     }
 
+
+    //拼接域名
+    public static  function setImg($img,$hostInfo=null){
+        if(stripos($img,'http') !== 0 && !empty($img)) {
+            $hostInfo = empty($hostInfo)?Yii::$app->request->hostInfo:$hostInfo;
+            $img = $hostInfo . $img;
+        }
+        return $img;
+    }
+
 }

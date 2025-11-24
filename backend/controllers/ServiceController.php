@@ -1,8 +1,9 @@
 <?php
 
-namespace api\controllers;
+namespace backend\controllers;
 
 use api\extensions\ApiBaseController;
+use api\services\OrderQueryService;
 use api\services\SeriviceOrderQueryService;
 use backend\models\Address;
 use backend\models\Icon;
@@ -17,58 +18,6 @@ use yii\db\Exception;
  */
 class ServiceController extends ApiBaseController
 {
-
-    /**
-     * 服务首页
-     * **/
-    public function actionIndex()
-    {
-
-        $data = [
-            'banner'=>[],
-            'icon'=>[],
-            'order'=>[],
-        ];
-        $banner=Icon::getList(['type' => 4]);
-        $icon=Icon::getList(['type' => 5]);
-        foreach ($banner as $k=>$v){
-            $data['banner'][]=[
-                'image'=>$this->setImg($v['image']),
-                'href'=>$v['href'],
-                'category'=>$v['category'],
-                'appid'=>$v['appid'],
-            ];
-        }
-        foreach ($icon as $k=>$v){
-            $data['icon'][]=[
-                'image'=>$this->setImg($v['image']),
-                'href'=>$v['href'],
-                'title'=>$v['title'],
-                'subtitle'=>$v['subtitle'],
-                'category'=>$v['category'],
-                'appid'=>$v['appid'],
-            ];
-        }
-        $user_id=Yii::$app->request->post('user_id');
-        if($user_id){
-            $order=ServiceOrder::find()->where(['user_id'=>$user_id])->andWhere(['in','status',[1,2]])->orderBy('id desc')->all();
-            foreach ($order as $k => $v) {
-                $data['order'][] = [
-                    'service_order_id' => $v->id,
-                    'type'=>$v->type,
-                    'title' => $v->title,
-                    'order_number' => $v->order_number,
-                    'date' => date('Y/m/d',$v->date),
-                    'time' => $v->time,
-                    'status' => $v->status,
-                    'status_message'=>ServiceOrder::$status_message[$v->status],
-                ];
-            }
-        }
-
-        return $this->jsonSuccess($data);
-    }
-
 
 
     //安装申请
@@ -248,42 +197,19 @@ class ServiceController extends ApiBaseController
     public function actionList()
     {
         $params = Yii::$app->request->post();
-        $data = [
-            'order' => [],
-        ];
-
         // 自定义验证规则
         $customRules = [];
-        $rules = $this->getRules(['user_id'], $customRules);
+        $rules = $this->getRules(['admin_id'], $customRules);
         $validate = $this->validateParams($params, $rules);
         if ($validate) {
             return $this->jsonError($validate);
         }
-        $query=ServiceOrder::find()->where(['user_id'=>$params['user_id']]);
-        $page=Yii::$app->request->get('page',1);
-        $page_number=Yii::$app->request->get('page',10);
-        $begin=($page-1)*$page_number;
-        $order=$query->offset($begin)->limit($page_number)->orderBy('id desc')->all();
-        foreach ($order as $k=>$v){
-                if($v->type==1){
-                    $image=Icon::getOne(['type'=>8]);
-                }elseif($v->type==2){
-                    $image=Icon::getOne(['type'=>9]);
-                }else{
-                    $image=Icon::getOne(['type'=>10]);
-                }
-                $data['order'][] = [
-                    'service_order_id' => $v->id,
-                    'type'=>$v->type,
-                    'title' => $v->title,
-                    'order_number' => $v->order_number,
-                    'date' => date('Y/m/d',$v->date),
-                    'time' => $v->time,
-                    'status' => $v->status,
-                    'status_message'=>ServiceOrder::$status_message[$v->status],
-                    'image'=>$this->setImg($image->image),
-                ];
+        $query=ServiceOrder::find();
+        if($params['user_id']){
+            $query->andWhere(['user_id'=>$params['user_id']]);
         }
+
+        $data=SeriviceOrderQueryService::searchOrder($params);
         return $this->jsonSuccess($data);
     }
 
@@ -296,11 +222,12 @@ class ServiceController extends ApiBaseController
         $data = [
             'detail' => [],
         ];
+
         // 自定义验证规则
         $customRules = [
             [['service_order_id'],'required','message'=>'service_order_id必传'],
         ];
-        $rules = $this->getRules(['user_id'], $customRules);
+        $rules = $this->getRules(['admin_id'], $customRules);
         $validate = $this->validateParams($params, $rules);
         if ($validate) {
             return $this->jsonError($validate);
@@ -319,7 +246,7 @@ class ServiceController extends ApiBaseController
         $customRules = [
             [['service_order_id'],'required','message'=>'service_order_id必传'],
         ];
-        $rules = $this->getRules(['user_id'], $customRules);
+        $rules = $this->getRules(['admin_id'], $customRules);
         $validate = $this->validateParams($params, $rules);
         if ($validate) {
             return $this->jsonError($validate);
@@ -340,69 +267,5 @@ class ServiceController extends ApiBaseController
         return $this->jsonSuccess($data);
     }
 
-
-    public function actionEvaluate()
-    {
-        $params = Yii::$app->request->post();
-
-        // 自定义验证规则
-        $customRules = [
-            [['service_order_id'],'required','message'=>'service_order_id必传'],
-            [['number1'],'required','message'=>'评分必传'],
-            [['number2'],'required','message'=>'评分必传'],
-            [['number3'],'required','message'=>'评分必传'],
-        ];
-        $rules = $this->getRules(['user_id'], $customRules);
-        $validate = $this->validateParams($params, $rules);
-        if ($validate) {
-            return $this->jsonError($validate);
-        }
-        $order=ServiceOrder::findOne($params['service_order_id']);
-        if($order->status==3 and $order['user_id']==$params['user_id']){
-
-            if($order->is_evaluate==1){
-                $transaction = Yii::$app->db->beginTransaction();
-
-                try {
-                    $model = new UserEvaluate();
-                    $model->user_id = $params['user_id'];
-                    $model->number1 = $params['number1'];
-                    $model->number2 = $params['number2'];
-                    $model->number3 = $params['number3'];
-                    $model->worker_id=$order->worker_id;
-                    $model->content=$params['content'];
-                    $model->image=$params['image'];
-                    $model->service_order_id=$order->id;
-                    if (!$model->save()) {
-                        $error = $model->getErrors();
-                        $error = reset($error);
-                        throw new Exception($error);
-                    }
-                    $order->is_evaluate=0;
-                    if(!$order->save()){
-                        $error = $order->getErrors();
-                        $error = reset($error);
-                        throw new Exception($error);
-                    }
-                    $return['error'] = 0;
-                    $transaction->commit();
-                } catch (Exception $e) {
-                    $return['message'] = $e->getMessage();
-                    $transaction->rollBack();
-                    return $this->jsonError($return['message']);
-                }
-
-            }else{
-                return $this->jsonError('已经评价过了');
-            }
-        }else{
-            return $this->jsonError('找不到相关订单');
-        }
-        $data=[
-            'message'=>'评价成功'
-        ];
-
-        return $this->jsonSuccess($data);
-    }
 
 }

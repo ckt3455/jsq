@@ -128,6 +128,7 @@ class UserGoodsQueryService
                 'user_name'=>$v->user['name'],
                 'user_image'=> Helper::setImg($v->user['image']),
                 'user_mobile'=>$v->user['mobile'],
+                'goods_number'=>$v->goods_number,
             ];
         }
 
@@ -157,6 +158,7 @@ class UserGoodsQueryService
             'goods_image' => Helper::setImg($goods->goods_image),
             'lx_status' => $goods->lx_status,
             'is_index' => $goods->is_index,
+            'goods_number'=>$goods->goods_number,
             'created_at'=>date('Y-m-d H:i:s'),
         ];
         return $detail;

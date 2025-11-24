@@ -38,6 +38,19 @@ class Icon extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public static $type_message=[
+        1=>'首页banner',
+        2=>'首页广告图',
+        3=>'首页图标',
+        4=>'服务页banner',
+        5=>'服务页图标',
+        6=>'个人中心图标',
+        7=>'个人中心广告',
+        8=>'安装工单图标',
+        9=>'维修工单图标',
+        10=>'换芯工单图标',
+    ];
     /**
      * @inheritdoc
      */

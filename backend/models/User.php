@@ -37,7 +37,7 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['mobile', 'password'], 'required'],
+            [['mobile'], 'required'],
             [['parent_id', 'created_at', 'updated_at', 'is_buy', 'level_time', 'level_time2', 'level_time3'], 'integer'],
             [['money'], 'number'],
             [['mobile', 'code'], 'string', 'max' => 20],
@@ -76,14 +76,19 @@ class User extends \yii\db\ActiveRecord
 
     {
 
+        if($this->isNewRecord and !$this->password){
+            $this->password=md5('123456'.md5(Yii::$app->params['password_code']));
+        }else{
+            if ($this->isAttributeChanged('password')) {
 
-        if ($this->isAttributeChanged('password')) {
+
+                $this->password = md5($this->password.md5(Yii::$app->params['password_code']));
 
 
-            $this->password = md5($this->password.md5(Yii::$app->params['password_code']));
-
+            }
 
         }
+
 
 
         return parent::beforeSave($insert);

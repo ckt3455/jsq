@@ -37,7 +37,7 @@ class LoginController extends ApiBaseController
             return $this->jsonError('获取手机号失败');
         }
 
-        $model = User::find()->where(['phone' => $phone])->limit(1)->one();
+        $model = User::find()->where(['mobile' => $phone])->limit(1)->one();
         if (!$model) {
                 $new = new User();
                 $new->mobile = $phone;

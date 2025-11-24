@@ -15,6 +15,8 @@ use Yii;
 class IndexController extends ApiBaseController
 {
 
+
+
     /**
      * 首页
      * **/
@@ -92,7 +94,7 @@ class IndexController extends ApiBaseController
         $mobile=$params['mobile'];
         $model = Code::find()->where(['phone' => $mobile])->one();
         $number = rand(10000, 99999);
-        if (count($model) > 0) {
+        if ($model) {
             if ((time() - $model['create_time']) <= 60) {
                 return $this->jsonError('短信发送太频繁，请等待1分钟');
             } else {

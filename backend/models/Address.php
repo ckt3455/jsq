@@ -60,4 +60,20 @@ class Address extends \yii\db\ActiveRecord
             'is_default2' => '发票默认地址',
         ];
     }
+
+
+    public function beforeSave($insert)
+
+    {
+
+
+        if($this->isAttributeChanged('is_default') and $this->is_default==1){
+            Address::updateAll(['is_default'=>0],['user_id'=>$this->user_id]);
+        }
+
+
+        return parent::beforeSave($insert);
+
+    }
+
 }

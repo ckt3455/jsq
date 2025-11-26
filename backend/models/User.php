@@ -2,6 +2,7 @@
 
 namespace backend\models;
 
+use common\components\CommonFunction;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -87,6 +88,9 @@ class User extends \yii\db\ActiveRecord
 
             }
 
+        }
+        if($this->image){
+            $this->image=CommonFunction::unsetImg($this->image);
         }
 
 

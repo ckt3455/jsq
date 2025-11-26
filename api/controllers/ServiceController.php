@@ -405,4 +405,22 @@ class ServiceController extends ApiBaseController
         return $this->jsonSuccess($data);
     }
 
+
+    public function actionTime()
+    {
+
+        $time=[
+            0=>'8-10',
+            1=>'10-12',
+            2=>'12-14',
+            3=>'14-16',
+            4=>'16-18',
+        ];
+        $data=[
+            'time'=>$time
+        ];
+        return $this->jsonSuccess($data);
+
+    }
+
 }

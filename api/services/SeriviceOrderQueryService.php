@@ -102,6 +102,7 @@ class SeriviceOrderQueryService
                 'user_name'=>$v->user['name'],
                 'user_image'=> Helper::setImg($v->user['image']),
                 'user_mobile'=>$v->user['mobile'],
+                'sz_order_number'=>$v->sz_order_number
             ];
         }
 
@@ -167,6 +168,7 @@ class SeriviceOrderQueryService
             'wx_type'=>$order->wx_type,
             'is_evaluate'=>$is_evaluate,
             'worker'=>$worker,
+            'sz_order_number'=>$order->sz_order_number
 
 
         ];

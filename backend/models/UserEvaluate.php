@@ -69,12 +69,25 @@ class UserEvaluate extends \yii\db\ActiveRecord
     {
         return [
             [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                 ],
             ],
         ];
+    }
+
+    public function getOrder()
+    {
+        return $this->hasOne(ServiceOrder::class,['id'=>'service_order_id']);
+
+    }
+
+
+    public function getWorker()
+    {
+        return $this->hasOne(Worker::class,['id'=>'worker_id']);
+
     }
 }

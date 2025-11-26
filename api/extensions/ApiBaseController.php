@@ -22,10 +22,13 @@ class ApiBaseController extends Controller {
     public function beforeAction($action)
     {
         // 验证签名
-//        if (!$this->validateSign()) {
+        $controller = $action->controller->id;
+        $actionName = $action->id;
+//        if($controller!='index' or $actionName!='up-image'){
+//            if (!$this->validateSign()) {
+//                throw new \yii\web\BadRequestHttpException('签名错误');
+//            }
 //
-//
-//            throw new \yii\web\BadRequestHttpException('签名错误');
 //        }
 
         return parent::beforeAction($action);

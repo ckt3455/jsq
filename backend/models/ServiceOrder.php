@@ -2,6 +2,7 @@
 
 namespace backend\models;
 
+use common\components\CommonFunction;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -54,9 +55,16 @@ class ServiceOrder extends \yii\db\ActiveRecord
     }
 
     public static $status_message=[
+        -1=>'已取消',
         1=>'待处理',
         2=>'已接单',
         3=>'已完成',
+    ];
+
+    public static $type_message=[
+        1=>'安装工单',
+        2=>'维修工单',
+        3=>'换芯工单',
     ];
 
     /**
@@ -103,6 +111,20 @@ class ServiceOrder extends \yii\db\ActiveRecord
             ],
         ];
     }
+
+    public function beforeSave($insert)
+
+    {
+        if($this->isNewRecord){
+            $this->order_number=date('YmdHis') . $this->user_id . mt_rand(1000, 9999);
+        }
+        if($this->image){
+            $this->image=CommonFunction::unsetImg($this->image);
+        }
+        return parent::beforeSave($insert);
+
+    }
+
 
 
     public function getUser()

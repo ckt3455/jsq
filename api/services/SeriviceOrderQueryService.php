@@ -102,7 +102,8 @@ class SeriviceOrderQueryService
                 'user_name'=>$v->user['name'],
                 'user_image'=> Helper::setImg($v->user['image']),
                 'user_mobile'=>$v->user['mobile'],
-                'sz_order_number'=>$v->sz_order_number
+                'sz_order_number'=>$v->sz_order_number,
+                'wx_type'=>$v->wx_type,
             ];
         }
 
@@ -146,6 +147,18 @@ class SeriviceOrderQueryService
         }else{
             $is_evaluate=0;
         }
+        $jx_message=[];
+        $hj_message=[];
+        if($order->wx_type==2){
+            $jx_message=[
+                'message'=>'已完成|快递已送达',
+                'time'=>'2025-11-27'
+            ];
+            $hj_message=[
+                'message'=>'已完成|快递已送达',
+                'time'=>'2025-11-27'
+            ];
+        }
         $detail = [
             'service_order_id' => $order->id,
             'type'=>$order->type,
@@ -168,7 +181,15 @@ class SeriviceOrderQueryService
             'wx_type'=>$order->wx_type,
             'is_evaluate'=>$is_evaluate,
             'worker'=>$worker,
-            'sz_order_number'=>$order->sz_order_number
+            'sz_order_number'=>$order->sz_order_number,
+            'jx_express'=>$order->jx_express,
+            'jx_express_number'=>$order->jx_express_number,
+            'jx_express_image'=>Helper::setImg($order->jx_express_image),
+            'hj_express'=>$order->hj_express,
+            'hj_express_number'=>$order->hj_express_number,
+            'jx_message'=>$jx_message,
+            'hj_message'=>$hj_message,
+
 
 
         ];

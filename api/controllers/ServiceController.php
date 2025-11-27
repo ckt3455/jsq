@@ -173,6 +173,12 @@ class ServiceController extends ApiBaseController
             $new->image=$params['image'];
             $new->content=$params['content'];
             $new->detail=$params['detail'];
+            if($params['wx_type']){
+                $new->wx_type=$params['wx_type'];
+            }
+            $new->jx_express=$params['jx_express'];
+            $new->jx_express_number=$params['jx_express_number'];
+            $new->jx_express_image=$params['jx_express_image'];
             if(!$new->save()){
                 return $this->jsonError('申请维修失败');
             }
@@ -248,10 +254,6 @@ class ServiceController extends ApiBaseController
     public function actionList()
     {
         $params = Yii::$app->request->post();
-        $data = [
-            'order' => [],
-        ];
-
         // 自定义验证规则
         $customRules = [];
         $rules = $this->getRules(['user_id'], $customRules);
@@ -259,33 +261,12 @@ class ServiceController extends ApiBaseController
         if ($validate) {
             return $this->jsonError($validate);
         }
-        $query=ServiceOrder::find()->where(['user_id'=>$params['user_id']]);
-        $page=Yii::$app->request->get('page',1);
-        $page_number=Yii::$app->request->get('page',10);
-        $begin=($page-1)*$page_number;
-        $order=$query->offset($begin)->limit($page_number)->orderBy('id desc')->all();
-        foreach ($order as $k=>$v){
-                if($v->type==1){
-                    $image=Icon::getOne(['type'=>8]);
-                }elseif($v->type==2){
-                    $image=Icon::getOne(['type'=>9]);
-                }else{
-                    $image=Icon::getOne(['type'=>10]);
-                }
-                $data['order'][] = [
-                    'service_order_id' => $v->id,
-                    'type'=>$v->type,
-                    'title' => $v->title,
-                    'order_number' => $v->order_number,
-                    'date' => date('Y/m/d',$v->date),
-                    'time' => $v->time,
-                    'status' => $v->status,
-                    'status_message'=>ServiceOrder::$status_message[$v->status],
-                    'image'=>$this->setImg($image->image),
-                ];
-        }
+        $data=SeriviceOrderQueryService::searchOrder($params);
         return $this->jsonSuccess($data);
     }
+
+
+
 
 
 
@@ -421,6 +402,93 @@ class ServiceController extends ApiBaseController
         ];
         return $this->jsonSuccess($data);
 
+    }
+
+
+    public function actionJxAddress()
+    {
+        $data=[
+            'jx_address'=>Yii::$app->config->info('JX_ADDRESS'),
+            'jx_contact'=>Yii::$app->config->info('JX_contact'),
+            'jx_mobile'=>Yii::$app->config->info('JX_mobile'),
+        ];
+        return $this->jsonSuccess($data);
+
+    }
+
+
+    public function actionExpressMessage()
+    {
+        $params = Yii::$app->request->post();
+
+        // 自定义验证规则
+        $customRules = [
+            [['service_order_id'],'required','message'=>'订单id必传'],
+        ];
+        $rules = $this->getRules(['user_id'], $customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $order=ServiceOrder::findOne($params['service_order_id']);
+        $list=[];
+        $list[]=[
+            'status'=>'已签收',
+            'time'=>'2025-11-25 10:00',
+            'message'=>'已签收'
+        ];
+        $list[]=[
+            'status'=>'派送中',
+            'time'=>'2025-11-24 8:00',
+            'message'=>'快递到达宁波'
+        ];
+        $data=[
+            'express'=>$order->jx_express,
+            'express_number'=>$order->jx_express_number,
+            'contact'=>'张三',
+            'mobile'=>'123456789',
+            'list'=>$list,
+        ];
+
+        return $this->jsonSuccess($data);
+    }
+
+
+
+    public function actionExpressMessage2()
+    {
+        $params = Yii::$app->request->post();
+
+        // 自定义验证规则
+        $customRules = [
+            [['service_order_id'],'required','message'=>'订单id必传'],
+        ];
+        $rules = $this->getRules(['user_id'], $customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $order=ServiceOrder::findOne($params['service_order_id']);
+        $list=[];
+        $list[]=[
+            'status'=>'已签收',
+            'time'=>'2025-11-25 10:00',
+            'message'=>'已签收'
+        ];
+        $list[]=[
+            'status'=>'派送中',
+            'time'=>'2025-11-24 8:00',
+            'message'=>'快递到达宁波'
+        ];
+        $data=[
+            'express'=>$order->hj_express,
+            'express_number'=>$order->hj_express_number,
+            'contact'=>'张三',
+            'mobile'=>'123456789',
+            'list'=>$list,
+        ];
+
+        return $this->jsonSuccess($data);
     }
 
 }

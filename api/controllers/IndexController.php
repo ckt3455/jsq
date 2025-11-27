@@ -12,6 +12,7 @@ use backend\models\Worker;
 use common\components\File;
 use common\components\Helper;
 use common\components\SzApi;
+use common\components\WdtClient;
 use Yii;
 use yii\web\Response;
 use function AlibabaCloud\Client\json;
@@ -21,6 +22,26 @@ use function AlibabaCloud\Client\json;
  */
 class IndexController extends ApiBaseController
 {
+
+
+    public function actionTest()
+    {
+
+        $new=new WdtClient();
+        $new->appkey=Yii::$app->params['appkey'];
+        $new->appsecret=Yii::$app->params['appsecret'];
+        $new->sid=Yii::$app->params['sid'];
+        $new->gatewayUrl='https://sandbox.wangdian.cn/openapi2/stockout_order_query_trade.php';
+
+        $new->putApiParam('status', 55);
+        $new->putApiParam('start_time', '2025-11-01 00:00:00');
+        $new->putApiParam('end_time', '2025-11-26 00:00:00');
+        $new->putApiParam('page_no', '0');
+        $new->putApiParam('page_size', '10');
+        $json = $new->wdtOpenApi();
+        var_dump(json_decode($json,true));
+        exit();
+    }
 
     /**
      * 首页

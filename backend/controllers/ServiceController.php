@@ -35,11 +35,6 @@ class ServiceController extends ApiBaseController
         if ($validate) {
             return $this->jsonError($validate);
         }
-        $query=ServiceOrder::find();
-        if($params['user_id']){
-            $query->andWhere(['user_id'=>$params['user_id']]);
-        }
-
         $data=SeriviceOrderQueryService::searchOrder($params);
         return $this->jsonSuccess($data);
     }
@@ -157,7 +152,11 @@ class ServiceController extends ApiBaseController
         }
         $order_type=1;
         if($order['type']==2){
-            $service_type=107;
+            if($order['wx_ype']==2){
+                $service_type=109;
+            }else{
+                $service_type=107;
+            }
             $goods=UserGoods::findOne($order['goods_id']);
             if($goods->end_time<time()){
                 $order_type=2;

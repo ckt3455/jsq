@@ -63,6 +63,36 @@ class ServiceController extends ApiBaseController
     }
 
 
+    //修改订单信息
+    public function actionUpdate(){
+        $params = Yii::$app->request->post();
+        $customRules = [
+            [['service_order_id'],'required','message'=>'service_order_id必传'],
+        ];
+        $rules = $this->getRules(['admin_id'], $customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $order=ServiceOrder::findOne($params['service_order_id']);
+        if($order->status==2){
+            return $this->jsonError('已经推送的订单无法修改');
+        }else{
+            $order->setAttributes($params);
+            $order->date=strtotime($params['date']);
+            if(!$order->save()){
+                return $this->jsonError('修改失败',$order->getErrors());
+            }
+            $data=[
+                'message'=>'修改成功'
+            ];
+
+            return $this->jsonSuccess($data);
+
+        }
+    }
+
+
     //确认完成
     public function actionConfirm()
     {

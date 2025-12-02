@@ -95,7 +95,7 @@ class WdtClient
 		curl_setopt($cl, CURLOPT_POST, true);
 		curl_setopt($cl,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
         curl_setopt($cl, CURLOPT_SSL_VERIFYPEER, false); // 信任任何证书
-        curl_setopt($cl, CURLOPT_SSL_VERIFYHOST, 1);
+        curl_setopt($cl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($cl,CURLOPT_HTTPHEADER,array("Content-Type: application/x-www-form-urlencoded","Content-length: ".$length));
 		curl_setopt($cl,CURLOPT_POSTFIELDS,$postdata);
 		curl_setopt($cl,CURLOPT_RETURNTRANSFER,true);

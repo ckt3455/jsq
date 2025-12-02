@@ -159,6 +159,11 @@ class SeriviceOrderQueryService
                 'time'=>'2025-11-27'
             ];
         }
+        if($order->wx_type==2 and $order->status==1){
+            $is_jx=1;
+        }else{
+            $is_jx=0;
+        }
         $detail = [
             'service_order_id' => $order->id,
             'type'=>$order->type,
@@ -189,6 +194,7 @@ class SeriviceOrderQueryService
             'hj_express_number'=>$order->hj_express_number,
             'jx_message'=>$jx_message,
             'hj_message'=>$hj_message,
+            'is_jx'=>$is_jx
 
 
 

@@ -176,9 +176,9 @@ class ServiceController extends ApiBaseController
             if($params['wx_type']){
                 $new->wx_type=$params['wx_type'];
             }
-            $new->jx_express=$params['jx_express'];
-            $new->jx_express_number=$params['jx_express_number'];
-            $new->jx_express_image=$params['jx_express_image'];
+//            $new->jx_express=$params['jx_express'];
+//            $new->jx_express_number=$params['jx_express_number'];
+//            $new->jx_express_image=$params['jx_express_image'];
             if(!$new->save()){
                 return $this->jsonError('申请维修失败');
             }
@@ -266,6 +266,40 @@ class ServiceController extends ApiBaseController
     }
 
 
+    //上传快递信息
+    public function actionUpdateExpress()
+    {
+        $params = Yii::$app->request->post();
+        // 自定义验证规则
+        $customRules = [
+            [['service_order_id'],'required','message'=>'service_order_id必传'],
+        ];
+        $rules = $this->getRules(['user_id'], $customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $model=ServiceOrder::findOne($params['service_order_id']);
+        if($model->wx_type==2 and ($model->status==1 or $model->status==2)){
+            $model->jx_express=$params['jx_express'];
+            $model->jx_express_number=$params['jx_express_number'];
+            $model->jx_express_image=$params['jx_express_image'];
+            if($model->save()){
+                $data=[
+                    'message'=>'提交成功'
+                ];
+                return $this->jsonSuccess($data);
+            }else{
+                return $this->jsonError('提交失败');
+            }
+        }else{
+            return $this->jsonError('该订单无法上传寄修信息');
+        }
+
+
+    }
+
+
 
 
 
@@ -316,6 +350,37 @@ class ServiceController extends ApiBaseController
         }
         $data=[
             'message'=>'确认成功'
+        ];
+
+        return $this->jsonSuccess($data);
+    }
+
+
+    //取消订单
+    public function actionCancel()
+    {
+        $params = Yii::$app->request->post();
+
+        // 自定义验证规则
+        $customRules = [
+            [['service_order_id'],'required','message'=>'service_order_id必传'],
+        ];
+        $rules = $this->getRules(['user_id'], $customRules);
+        $validate = $this->validateParams($params, $rules);
+        if ($validate) {
+            return $this->jsonError($validate);
+        }
+        $order=ServiceOrder::findOne($params['service_order_id']);
+        if($order->status==1 and $order->user_id==$params['user_id']){
+            $order->status=-1;
+            if(!$order->save()){
+                return $this->jsonError('取消失败');
+            }
+        }else{
+            return $this->jsonError('找不到相关订单');
+        }
+        $data=[
+            'message'=>'取消成功'
         ];
 
         return $this->jsonSuccess($data);

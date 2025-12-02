@@ -56,12 +56,13 @@ class OrderController extends ApiBaseController
             foreach ($detail as $k=>$v){
                 $data['goods'][] = [
                     'detail_id'=>$v['id'],
-                    'goods_name' => $v->goods_name,
+                    'goods_name' => $v->goods_title,
                     'goods_code' => $v->goods_code,
                     'goods_image' => $this->setImg($v->goods_image),
                     'is_index'=>1,
                     'lx_alert'=>1,
                     'goods_type'=>$v->goods_type,
+                    'goods_number'=>'',
                 ];
             }
 

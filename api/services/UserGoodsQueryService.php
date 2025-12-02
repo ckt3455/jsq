@@ -45,7 +45,7 @@ class UserGoodsQueryService
                     $query->andWhere([
                         'and',
                         ['<', 'lx_end_time', $warningTime],
-                        ['>=', 'lx_start_time', $currentTime]
+                        ['>=', 'lx_end_time', $currentTime]
                     ]);
                     break;
                 case 3:
